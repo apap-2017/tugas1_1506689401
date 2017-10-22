@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8"></meta>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+<link rel="stylesheet" href="/css/bootstrap.min.css"></link>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="/js/jquery-3.2.1.slim.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="/DataTables/datatables.min.css" />
+<script type="text/javascript" src="/DataTables/datatables.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$('#table_id').DataTable();
+	});
+</script>
+
+<title>Lihat Penduduk</title>
+</head>
+<body>
+	<div th:replace="fragments/fragment :: header"></div>
+	<div class="container">
+		<div
+			th:unless="${idKotaNow != null and idKecamatanNow != null and idKelurahanNow != null}">
+			<h4 th:if="${judulKota} == null">LIHAT DATA PENDUDUK BERDASARKAN
+				KOTA</h4>
+			<h4
+				th:text="${judulKota} != null and ${judulKecamatan} == null ? 'LIHAT DATA PENDUDUK BERDASARKAN KECAMATAN DI ' + ${judulKota} : ''"></h4>
+			<h4
+				th:text="${judulKecamatan} != null ? 'LIHAT DATA PENDUDUK BERDASARKAN KELURAHAN DI ' + ${judulKota} + ', KECAMATAN ' + ${judulKecamatan}  : ''"></h4>
+
+			<form>
+				<label for="masukKota">Kota/Kabupaten</label> <select id="masukkota"
+					name="kt"
+					th:attr="disabled=${idKotaNow} != null ? 'true' : 'false'">
+					<option th:each="kota,iterationStatus: ${allKota}"
+						th:value="${kota.id}" th:text="${kota.nama_kota}"
+						th:selected="${idKotaNow} == ${kota.id} ? 'true' : 'false'">Lihat
+						Kota</option>
+				</select> <input th:if="${idKotaNow} != null" type="hidden" name="kt"
+					th:attr="value=${idKotaNow}" />
+
+				<div th:if="${idKotaNow} != null">
+					<label for="masukKecamatan">Kecamatan</label> <select
+						id="masukKecamatan" name="kc"
+						th:attr="disabled=${idKecamatanNow} != null ? 'true' : 'false'">
+						<option th:each="kecamatan,iterationStatus: ${kecamatanByKota}"
+							th:value="${kecamatan.id}" th:text="${kecamatan.nama_kecamatan}"
+							th:selected="${idKecamatanNow} == ${kecamatan.id} ? 'true' : 'false'">Lihat
+							Kecamatan</option>
+					</select> <input th:if="${idKecamatanNow} != null" type="hidden" name="kc"
+						th:attr="value=${idKecamatanNow}" /> <br />
+				</div>
+
+				<div th:if="${idKecamatanNow} != null">
+					<label for="masukKelurahan">Kelurahan</label> <select
+						id="masukKelurahan" name="kl"
+						th:attr="disabled=${idKelurahanNow} != null ? 'true' : 'false'">
+						<option
+							th:each="kelurahan,iterationStatus: ${kelurahanByKecamatan}"
+							th:value="${kelurahan.id}" th:text="${kelurahan.nama_kelurahan}"
+							th:selected="${idKelurahanNow} == ${kelurahan.id} ? 'true' : 'false'">Lihat
+							Kelurahan</option>
+					</select> <input th:if="${idKelurahanNow} != null" type="hidden" name="kl"
+						th:attr="value=${idKelurahanNow}" />
+				</div>
+
+				<div>
+					<button type="submit">Lihat</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div
+		th:if="${idKotaNow != null and idKecamatanNow != null and idKelurahanNow != null}">
+		<div class="container">
+			<h4
+				th:text="${judulKecamatan} != null ? 'LIHAT DATA PENDUDUK DI ' + ${judulKota} + ', KECAMATAN ' + ${judulKecamatan} + ' KELURAHAN ' + ${kelurahan.nama_kelurahan} : ''"></h4>
+			<table id="table_id" class="table display">
+				<thead>
+					<tr>
+						<th>NIK</th>
+						<th>Nama</th>
+						<th>Jenis Kelamin</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="penduduk,iterationStatus: ${penduduks}">
+						<td th:text="${penduduk.nik}">NIK Penduduk</td>
+						<td th:text="${penduduk.nama}">Nama Penduduk</td>
+						<td
+							th:text="${penduduk.jenis_kelamin} == 0 ? 'Laki-laki' : 'Wanita'">Jenis Kelamin Penduduk</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
